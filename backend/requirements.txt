@@ -1,0 +1,43 @@
+# =============================================================================
+# requirements.txt — Dependencias de producción (versiones fijadas)
+# Ref. 3.6: Mantener librerías actualizadas y auditadas
+# =============================================================================
+# Las versiones están FIJADAS (pinned) para builds reproducibles y auditables.
+# Para actualizar: pip-compile requirements.in (con pip-tools)
+# =============================================================================
+
+# ── Web framework ────────────────────────────────────────────────────────────
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+
+# ── Base de datos ───────────────────────────────────────────────────────────
+sqlalchemy==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+
+# ── Auth y criptografía (3.2, 3.4) ───────────────────────────────────────
+# bcrypt: hash de contraseñas con salt automático (3.2)
+bcrypt==4.2.1
+# python-jose: JWT firmado con HMAC-SHA256 (HS256)
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.20
+
+# ── Configuración y schemas ──────────────────────────────────────────────────
+pydantic-settings==2.7.0
+pydantic[email]==2.10.3
+
+# ── Rate limiting (4.2) ──────────────────────────────────────────────────────
+# slowapi: rate limiting para FastAPI basado en limits.
+# Previene fuerza bruta en /login y abuso de la API.
+slowapi==0.1.9
+
+# ── 2FA ───────────────────────────────────────────────────
+# pyotp: generación y verificación de códigos TOTP (Google Authenticator)
+pyotp==2.9.0
+# qrcode + Pillow: generar imagen QR en base64 para el setup de 2FA
+qrcode==8.0
+Pillow==11.1.0
+
+# ── OAuth / HTTP cliente ─────────────────────────────────────
+# httpx: cliente HTTP async para intercambiar códigos OAuth con Google
+httpx==0.28.1

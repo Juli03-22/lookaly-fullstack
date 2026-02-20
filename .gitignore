@@ -1,0 +1,81 @@
+# =============================================================================
+# .gitignore — Lookaly Docker Monorepo
+# Ref. 3.7: Manejo seguro de configuración en repositorio
+# =============================================================================
+# NUNCA subir al repo:
+#   • Archivos .env reales (contraseñas, tokens, cadenas de conexión)
+#   • Certificados privados y claves SSH
+#   • Artifacts de build y cachés
+# SKÍ subir al repo:
+#   • .env.example (con valores ficticios, sin datos reales)
+# =============================================================================
+
+# ─── Secretos y entorno (¡NUNCA al repo!) ────────────────────────────────
+.env
+.env.local
+.env.production
+.env.staging
+.env.*.local
+backend/.env
+frontend/.env
+# Excepción: el ejemplo SÍ va al repo (sin valores reales)
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# Certificados y claves privadas
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# ─── Python ─────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.pyw
+*.egg-info/
+*.egg
+dist/
+build/
+venv/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ─── Node / Frontend ─────────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.vite/
+*.local
+
+# ─── Docker ──────────────────────────────────────────────────────────────
+postgres_data/
+pgdata/
+
+# ─── Editores / IDE ─────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ─── Logs y reportes de auditoría ──────────────────────────────────────
+*.log
+logs/
+# Reportes de pip-audit / safety / npm audit (pueden contener paths internos)
+pip-audit-report.json
+safety-report.json
+npm-audit.json
+snyk-report.json

@@ -1,0 +1,33 @@
+# =============================================================================
+# dev-requirements.txt — Dependencias de desarrollo y auditoría de seguridad
+# Ref. 3.6: Uso seguro de dependencias y librerías
+# =============================================================================
+# Instalar con:  pip install -r dev-requirements.txt
+# =============================================================================
+
+# Incluir dependencias de producción
+-r requirements.txt
+
+# ── Tests ──────────────────────────────────────────────────────────────────────
+httpx==0.28.1          # HTTP client para tests de integración
+pytest==8.3.4
+pytest-asyncio==0.24.0
+
+# ── Auditoría de seguridad (3.6) ───────────────────────────────────────────────
+# pip-audit: escanea dependencias de Python contra la base de datos de CVEs (PyPI Advisory DB)
+#   Uso: pip-audit
+#   o:   pip-audit --output json --output-file pip-audit-report.json
+pip-audit==2.8.0
+
+# safety: comprueba dependencias contra la base de datos de Safety DB
+#   Uso: safety check
+safety==3.2.14
+
+# bandit: análisis estático de código Python para detectar problemas de seguridad
+#   Uso: bandit -r app/ -ll
+#   -ll = solo advertencias de severidad MEDIA o ALTA
+bandit[toml]==1.8.3
+
+# ── Calidad de código ──────────────────────────────────────────────────────────
+ruff==0.9.1            # linter + formatter rápido
+mypy==1.14.1           # verificación estática de tipos

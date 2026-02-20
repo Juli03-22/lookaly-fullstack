@@ -1,0 +1,76 @@
+services:
+
+  # ── 4.1 Reverse proxy con TLS ─────────────────────────────────────────────
+  # nginx termina TLS, redirige HTTP→HTTPS y proxea al frontend y backend.
+  # Certificados: docker/certs/server.crt y server.key
+  # Dev: generar con  bash docker/gen-certs.sh
+  # Prod: sustituir por certificados de Let's Encrypt via certbot.
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/certs:/etc/nginx/certs:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules        # preservar node_modules del contenedor
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - API_TARGET=http://backend:8000   # proxy interno Docker
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app           # hot-reload montando el código
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://lookaly:lookalypass@db:5432/lookaly_db
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-change-in-production}
+      - FRONTEND_URL=http://localhost:5173
+      - DEBUG=true
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lookaly
+      POSTGRES_PASSWORD: lookalypass
+      POSTGRES_DB: lookaly_db
+    ports:
+      - "5432:5432"              # expuesto para acceso local con DBeaver/TablePlus
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Script de inicialización: crea usuario readonly con mínimo privilegio
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lookaly -d lookaly_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
