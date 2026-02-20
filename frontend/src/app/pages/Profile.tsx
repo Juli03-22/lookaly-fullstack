@@ -28,7 +28,8 @@ export default function Profile() {
   const handleLogout = async () => {
     await logout();
     navigate('/');
-  };\n
+  };
+
   const setup2FA = async () => {
     setTwoFALoading(true); setTwoFAMsg(null);
     try {
