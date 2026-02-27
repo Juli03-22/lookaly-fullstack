@@ -1,8 +1,10 @@
-﻿import { useParams, useNavigate, Link } from "react-router";
+﻿import { useParams, useNavigate, Link, Navigate } from "react-router";
 import { useState, useRef } from "react";
 import { motion, useInView, useScroll, useTransform } from "motion/react";
-import { mockProducts } from "../data/products";
-import { Star, ShoppingBag, ArrowLeft, Check, ExternalLink, TrendingDown, ChevronRight, Heart } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import { useProduct, useProducts, productImage, lowestPrice as getLowest } from "../hooks/useProducts";
+import { useCart } from "../context/CartContext";
+import { Star, ShoppingBag, ArrowLeft, Check, ExternalLink, TrendingDown, ChevronRight, Heart, Minus, Plus, Trash2 } from "lucide-react";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -27,42 +29,48 @@ const availabilityConfig = {
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = mockProducts.find(p => p.id === id);
+  const { product, loading } = useProduct(id);
+  const { products: allProducts } = useProducts();
+  const { addItem, removeItem, items } = useCart();
   const [selectedSite, setSelectedSite] = useState<string | null>(null);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [qty, setQty] = useState(1);
+  const [selectedImg, setSelectedImg] = useState(0);
   const [wishlist, setWishlist] = useState(false);
 
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
-  if (!product) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FDF8F9]">
-        <div className="text-center">
-          <h2 className="text-4xl font-extralight mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Producto no encontrado</h2>
-          <button onClick={() => navigate("/products")}
-            className="mt-4 text-sm text-[#7D3150] hover:underline">
-             Ver todos los productos
-          </button>
-        </div>
+        <div className="text-sm tracking-widest uppercase text-black/30">Cargando...</div>
       </div>
     );
   }
 
-  const sortedPrices = [...product.prices].sort((a, b) => a.price - b.price);
-  const lowestPrice = sortedPrices[0].price;
-  const highestPrice = sortedPrices[sortedPrices.length - 1].price;
+  if (!product) return <Navigate to="/404" replace />;
+
+  const sortedPrices = [...(product.prices ?? [])].sort((a, b) => Number(a.price) - Number(b.price));
+  const lowestPrice = sortedPrices.length > 0 ? Number(sortedPrices[0].price) : (product.unit_price != null ? Number(product.unit_price) : 0);
+  const highestPrice = sortedPrices.length > 0 ? Number(sortedPrices[sortedPrices.length - 1].price) : lowestPrice;
   const savings = highestPrice - lowestPrice;
-  const activeSite = selectedSite || sortedPrices[0].site;
-  const activePrice = product.prices.find(p => p.site === activeSite);
+  const activeSite = selectedSite || (sortedPrices[0]?.site ?? '');
+  const activePrice = product.prices?.find(p => p.site === activeSite);
+  const cartEntry = items.find(i => i.productId === product.id);
+
+  const displayImage = product.images?.length
+    ? (product.images[selectedImg]?.url ?? productImage(product))
+    : productImage(product);
 
   const handleAddToCart = () => {
+    addItem(product.id, activeSite, qty);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2500);
   };
 
-  const related = mockProducts.filter(p => p.id !== product.id && p.category === product.category).slice(0, 3);
+  const related = allProducts.filter(p => p.id !== product.id && p.category === product.category).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-[#FDF8F9]">
@@ -84,7 +92,8 @@ export default function ProductDetail() {
           {/* IMAGE */}
           <div ref={heroRef} className="lg:sticky lg:top-28">
             <motion.div className="relative overflow-hidden rounded-3xl aspect-square bg-neutral-50" style={{ y: imgY }}>
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+              <img src={displayImage} alt={product.name} className="w-full h-full object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg'; }} />
               {savings > 0 && (
                 <div className="absolute top-5 left-5 bg-[#7D3150] text-white text-xs px-4 py-1.5 rounded-full tracking-widest uppercase">
                   Ahorra ${savings.toLocaleString("es-MX")}
@@ -100,10 +109,12 @@ export default function ProductDetail() {
 
             {/* Thumbnail strip */}
             <div className="flex gap-3 mt-4">
-              {[product.image, product.image, product.image].map((src, i) => (
-                <div key={i} className={`w-20 h-20 rounded-xl overflow-hidden bg-neutral-50 cursor-pointer border-2 transition-colors ${i === 0 ? "border-[#7D3150]" : "border-transparent hover:border-[#E5B6C3]"}`}>
-                  <img src={src} alt="" className="w-full h-full object-cover" />
-                </div>
+              {(product.images?.length ? product.images.map(img => img.url) : [productImage(product), productImage(product), productImage(product)]).slice(0, 5).map((src, i) => (
+                <button key={i} onClick={() => setSelectedImg(i)}
+                  className={`w-20 h-20 rounded-xl overflow-hidden bg-neutral-50 cursor-pointer border-2 transition-colors ${i === selectedImg ? "border-[#7D3150]" : "border-transparent hover:border-[#E5B6C3]"}`}>
+                  <img src={src} alt="" className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg'; }} />
+                </button>
               ))}
             </div>
           </div>
@@ -125,7 +136,34 @@ export default function ProductDetail() {
                 <span className="text-sm text-black/50">{product.rating}  {product.reviews} reseñas</span>
               </div>
 
-              <p className="text-black/55 leading-relaxed text-sm mb-8">{product.description}</p>
+              <div className="mb-8">
+                <ReactMarkdown
+                  allowedElements={['p', 'ul', 'ol', 'li', 'strong', 'em', 'br']}
+                  unwrapDisallowed
+                  components={{
+                    p: ({ children }) => (
+                      <p className="text-black/55 leading-relaxed text-sm mb-2 last:mb-0">{children}</p>
+                    ),
+                    ul: ({ children }) => (
+                      <ul className="list-disc ml-4 mb-2 last:mb-0 text-sm text-black/55 space-y-0.5">{children}</ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="list-decimal ml-4 mb-2 last:mb-0 text-sm text-black/55 space-y-0.5">{children}</ol>
+                    ),
+                    li: ({ children }) => (
+                      <li className="leading-relaxed">{children}</li>
+                    ),
+                    strong: ({ children }) => (
+                      <strong className="font-semibold text-black/70">{children}</strong>
+                    ),
+                    em: ({ children }) => (
+                      <em className="italic">{children}</em>
+                    ),
+                  }}
+                >
+                  {product.description}
+                </ReactMarkdown>
+              </div>
             </FadeUp>
 
             {/* PRICE COMPARISON */}
@@ -137,7 +175,7 @@ export default function ProductDetail() {
 
               <div className="space-y-3">
                 {sortedPrices.map((price, i) => {
-                  const avail = availabilityConfig[price.availability];
+                  const avail = availabilityConfig[price.availability as keyof typeof availabilityConfig] ?? availabilityConfig['in-stock'];
                   const isSelected = activeSite === price.site;
                   const isBest = i === 0;
 
@@ -157,17 +195,13 @@ export default function ProductDetail() {
                           <div className="flex items-center gap-2 mt-0.5">
                             <div className={`w-1.5 h-1.5 rounded-full ${avail.dot}`} />
                             <span className={`text-xs ${avail.color}`}>{avail.label}</span>
-                            {price.shipping === 0 && <span className="text-xs text-emerald-600"> Envío gratis</span>}
                           </div>
                         </div>
                       </div>
                       <div className="text-right">
                         <div className="text-2xl font-extralight text-[#7D3150]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                          ${price.price.toLocaleString("es-MX")}
+                          ${Number(price.price).toLocaleString("es-MX")}
                         </div>
-                        {price.shipping && price.shipping > 0 && (
-                          <div className="text-xs text-black/35">+${price.shipping} envío</div>
-                        )}
                       </div>
                     </motion.button>
                   );
@@ -178,9 +212,9 @@ export default function ProductDetail() {
             {/* Summary */}
             <FadeUp delay={0.2} className="bg-[#FBF0F3] rounded-2xl p-5 mb-8">
               <div className="flex items-baseline justify-between mb-1">
-                <span className="text-sm text-black/50">Precio en {activeSite}</span>
+                <span className="text-sm text-black/50">Precio en {activeSite || 'tienda'}</span>
                 <span className="text-4xl font-extralight text-[#7D3150]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  ${activePrice?.price.toLocaleString("es-MX")} <span className="text-sm text-black/35">MXN</span>
+                  ${Number(activePrice?.price ?? lowestPrice).toLocaleString("es-MX")} <span className="text-sm text-black/35">MXN</span>
                 </span>
               </div>
               {savings > 0 && (
@@ -189,6 +223,21 @@ export default function ProductDetail() {
             </FadeUp>
 
             {/* CTA */}
+            <FadeUp delay={0.22} className="flex items-center gap-4 mb-4">
+              <span className="text-xs uppercase tracking-widest text-black/40">Cantidad</span>
+              <div className="flex items-center border border-[#E5B6C3]/40 rounded-xl overflow-hidden">
+                <button onClick={() => setQty(q => Math.max(1, q - 1))}
+                  className="w-9 h-9 flex items-center justify-center text-[#7D3150] hover:bg-[#E5B6C3]/20 transition-colors">
+                  <Minus className="w-3 h-3" />
+                </button>
+                <span className="w-8 text-center text-sm font-medium select-none">{qty}</span>
+                <button onClick={() => setQty(q => Math.min(10, q + 1))}
+                  className="w-9 h-9 flex items-center justify-center text-[#7D3150] hover:bg-[#E5B6C3]/20 transition-colors">
+                  <Plus className="w-3 h-3" />
+                </button>
+              </div>
+            </FadeUp>
+
             <FadeUp delay={0.25} className="flex gap-3">
               <motion.button onClick={handleAddToCart}
                 className={`flex-1 py-4 rounded-xl text-sm font-medium flex items-center justify-center gap-3 transition-all ${addedToCart ? "bg-emerald-500 text-white" : "bg-[#7D3150] text-white hover:bg-[#6a2943]"}`}
@@ -203,6 +252,19 @@ export default function ProductDetail() {
                 </motion.a>
               )}
             </FadeUp>
+
+            {/* In-cart indicator */}
+            {cartEntry && (
+              <FadeUp delay={0.28} className="flex items-center justify-between px-4 py-3 bg-emerald-50 rounded-xl mt-3">
+                <span className="text-sm text-emerald-700 font-medium">
+                  {cartEntry.quantity} pieza{cartEntry.quantity !== 1 ? 's' : ''} en tu carrito
+                </span>
+                <button onClick={() => removeItem(product.id)}
+                  className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-600 transition-colors">
+                  <Trash2 className="w-3 h-3" /> Quitar del carrito
+                </button>
+              </FadeUp>
+            )}
 
             {/* Back */}
             <FadeUp delay={0.3} className="mt-8">
@@ -223,18 +285,19 @@ export default function ProductDetail() {
             </FadeUp>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {related.map((p, i) => {
-                const lp = Math.min(...p.prices.map(x => x.price));
+                const lp = getLowest(p);
                 return (
                   <FadeUp key={p.id} delay={i * 0.1}>
                     <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.35 }}>
                       <Link to={`/product/${p.id}`} className="group block">
                         <div className="aspect-[4/5] overflow-hidden rounded-2xl bg-neutral-50 mb-4">
-                          <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <img src={productImage(p)} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg'; }} />
                         </div>
                         <div className="space-y-1">
                           <div className="text-xs uppercase tracking-widest text-black/35">{p.brand}</div>
                           <h3 className="text-lg hover:text-[#7D3150] transition-colors" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{p.name}</h3>
-                          <div className="text-xl font-light text-[#7D3150]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>${lp.toLocaleString("es-MX")}</div>
+                          {lp != null && <div className="text-xl font-light text-[#7D3150]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>${lp.toLocaleString("es-MX")}</div>}
                         </div>
                       </Link>
                     </motion.div>

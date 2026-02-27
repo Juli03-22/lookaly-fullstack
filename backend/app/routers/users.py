@@ -4,8 +4,8 @@ from sqlalchemy import select
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas.user import UserUpdate, UserOut
-from app.core.security import get_current_user, get_current_admin
+from app.schemas.user import UserUpdate, UserOut, UserAdminUpdate
+from app.core.security import get_current_user, get_current_admin, require_role
 
 router = APIRouter()
 
@@ -26,10 +26,27 @@ async def update_profile(
     return current_user
 
 
-@router.get("", response_model=list[UserOut], dependencies=[Depends(get_current_admin)])
+# administrativo puede ver la lista (solo lectura); admin puede ver y modificar
+@router.get("", response_model=list[UserOut], dependencies=[Depends(require_role('administrativo'))])
 async def list_users(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).order_by(User.created_at.desc()))
     return result.scalars().all()
+
+
+@router.patch("/{user_id}", response_model=UserOut, dependencies=[Depends(get_current_admin)])
+async def admin_update_user(
+    user_id: str,
+    data: UserAdminUpdate,
+    db: AsyncSession = Depends(get_db),
+):
+    """Solo super-admins pueden modificar rol, estado o nivel de admin de otra cuenta."""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(user, field, value)
+    return user
 
 
 @router.delete("/{user_id}", status_code=204, dependencies=[Depends(get_current_admin)])

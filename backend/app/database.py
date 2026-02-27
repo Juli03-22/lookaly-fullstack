@@ -32,7 +32,7 @@ async def get_db() -> AsyncSession:  # type: ignore[override]
 
 
 async def create_tables() -> None:
-    """Crear todas las tablas al iniciar (dev). En producción usa Alembic."""
+    """Crear todas las tablas al iniciar (dev). En producción usa Alembic o migrate-v2.sql."""
     async with engine.begin() as conn:
-        from app.models import product, user, price, cart  # noqa: F401
+        from app.models import product, product_image, user, price, cart, order, brand  # noqa: F401
         await conn.run_sync(Base.metadata.create_all)

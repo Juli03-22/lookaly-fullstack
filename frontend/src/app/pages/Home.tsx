@@ -1,6 +1,6 @@
 ﻿import { Link } from 'react-router';
 import { ArrowRight } from 'lucide-react';
-import { mockProducts } from '../data/products';
+import { useProducts, lowestPrice as getLowest, productImage } from '../hooks/useProducts';
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'motion/react';
 
@@ -27,7 +27,8 @@ function GridImage({ src, index }: { src: string; index: number }) {
 }
 
 export default function Home() {
-  const featuredProducts = mockProducts.slice(0, 4);
+  const { products, loading } = useProducts();
+  const featuredProducts = products.slice(0, 4);
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '28%']);
@@ -86,7 +87,7 @@ export default function Home() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
+      {!loading && featuredProducts.length > 0 && <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <FadeUp className="mb-16">
             <h2 className="text-4xl sm:text-5xl md:text-6xl mb-4 font-extralight tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Productos Destacados</h2>
@@ -94,18 +95,18 @@ export default function Home() {
           </FadeUp>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredProducts.map((product, i) => {
-              const lowestPrice = Math.min(...product.prices.map(p => p.price));
+              const lowest = getLowest(product);
               return (
                 <FadeUp key={product.id} delay={i * 0.1}>
                   <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.35 }}>
                     <Link to={`/product/${product.id}`} className="group block">
                       <div className="aspect-square overflow-hidden bg-neutral-50 mb-4 rounded-xl">
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <img src={productImage(product)} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                       </div>
                       <div className="space-y-1">
                         <div className="text-xs uppercase tracking-widest text-black/40">{product.brand}</div>
                         <h3 className="text-base group-hover:text-[#7D3150] transition-colors" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{product.name}</h3>
-                        <div className="text-xl font-light text-[#7D3150]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>${lowestPrice.toLocaleString('es-MX')}</div>
+                        {lowest != null && <div className="text-xl font-light text-[#7D3150]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>${lowest.toLocaleString('es-MX')}</div>}
                       </div>
                     </Link>
                   </motion.div>
@@ -121,7 +122,7 @@ export default function Home() {
             </motion.div>
           </FadeUp>
         </div>
-      </section>
+      </section>}
 
       {/* HOW IT WORKS */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#FBF0F3]">
@@ -203,7 +204,7 @@ export default function Home() {
                   <motion.img src={cat.img} alt={cat.label} className="w-full h-full object-cover" whileHover={{ scale: 1.08 }} transition={{ duration: 0.6, ease: EASE }} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent group-hover:from-black/70 transition-colors duration-500" />
                   <div className="absolute bottom-8 left-8 text-white">
-                    <h3 className="text-3xl font-extralight mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{cat.label}</h3>
+                    <h3 className="text-3xl font-extralight mb-2 mt-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{cat.label}</h3>
                     <div className="flex items-center gap-2 text-sm text-white/80 group-hover:gap-3 transition-all">Explorar <ArrowRight className="w-4 h-4" /></div>
                   </div>
                 </Link>

@@ -2,7 +2,8 @@ import { useState, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { motion, useInView, AnimatePresence } from 'motion/react';
 import { Search, X, SlidersHorizontal, ArrowRight } from 'lucide-react';
-import { mockProducts, Product } from '../data/products';
+import { Product } from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -22,9 +23,10 @@ const sortOptions = [
 function ProductSearchCard({ product, index }: { product: Product; index: number }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-40px' });
-  const lowestPrice = Math.min(...product.prices.map(p => p.price));
-  const highestPrice = Math.max(...product.prices.map(p => p.price));
-  const savings = highestPrice - lowestPrice;
+  const prices = product.prices ?? [];
+  const lowestPrice = prices.length > 0 ? Math.min(...prices.map(p => Number(p.price))) : (product.unit_price != null ? Number(product.unit_price) : null);
+  const highestPrice = prices.length > 0 ? Math.max(...prices.map(p => Number(p.price))) : null;
+  const savings = lowestPrice != null && highestPrice != null ? highestPrice - lowestPrice : 0;
 
   return (
     <motion.div ref={ref}
@@ -33,7 +35,7 @@ function ProductSearchCard({ product, index }: { product: Product; index: number
       <motion.div whileHover={{ y: -6 }} transition={{ duration: 0.3 }}>
         <Link to={`/product/${product.id}`} className="group flex gap-5 p-4 bg-white/70 rounded-2xl border border-[#E5B6C3]/15 hover:border-[#E5B6C3]/40 hover:shadow-[0_8px_32px_rgba(180,100,130,0.1)] transition-all">
           <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-neutral-50">
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+            <img src={product.primary_image ?? product.images?.[0]?.url ?? product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-1">
@@ -52,9 +54,9 @@ function ProductSearchCard({ product, index }: { product: Product; index: number
             <div className="flex items-center justify-between">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-xl font-light text-[#7D3150]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  ${lowestPrice.toLocaleString('es-MX')}
+                  {lowestPrice != null ? `$${lowestPrice.toLocaleString('es-MX')}` : 'Ver precio'}
                 </span>
-                <span className="text-xs text-black/30">desde · {product.prices.length} tiendas</span>
+                <span className="text-xs text-black/30">desde · {prices.length > 0 ? `${prices.length} tiendas` : 'precio base'}</span>
               </div>
               <ArrowRight className="w-4 h-4 text-black/25 group-hover:text-[#7D3150] group-hover:translate-x-1 transition-all" />
             </div>
@@ -72,13 +74,17 @@ export default function SearchPage() {
   const [sortBy, setSortBy] = useState('popular');
   const [showFilters, setShowFilters] = useState(false);
 
-  const results = mockProducts.filter(p => {
+  const { products, loading } = useProducts();
+
+  const results = products.filter(p => {
     const matchesQuery = query.length < 2 || [p.name, p.brand, p.description].some(s => s.toLowerCase().includes(query.toLowerCase()));
     const matchesCategory = !activeCategory || p.category === activeCategory;
     return matchesQuery && matchesCategory;
   }).sort((a, b) => {
-    if (sortBy === 'price-low') return Math.min(...a.prices.map(p => p.price)) - Math.min(...b.prices.map(p => p.price));
-    if (sortBy === 'price-high') return Math.min(...b.prices.map(p => p.price)) - Math.min(...a.prices.map(p => p.price));
+    const aMin = a.prices?.length ? Math.min(...a.prices.map(p => Number(p.price))) : Number(a.unit_price ?? 0);
+    const bMin = b.prices?.length ? Math.min(...b.prices.map(p => Number(p.price))) : Number(b.unit_price ?? 0);
+    if (sortBy === 'price-low') return aMin - bMin;
+    if (sortBy === 'price-high') return bMin - aMin;
     return b.rating - a.rating;
   });
 
@@ -149,7 +155,7 @@ export default function SearchPage() {
           <p className="text-sm text-black/45">
             {query.length >= 2
               ? <>{results.length} resultado{results.length !== 1 ? 's' : ''} para <span className="text-[#7D3150] font-medium">"{query}"</span></>
-              : <>{mockProducts.length} productos disponibles</>
+              : <>{loading ? 'Cargando...' : `${products.length} productos disponibles`}</>
             }
           </p>
           {activeCategory && (
@@ -161,13 +167,15 @@ export default function SearchPage() {
         </div>
 
         {/* Results list */}
-        {results.length > 0 ? (
+        {loading ? (
+          <div className="py-32 text-center text-black/30 text-sm tracking-widest uppercase">Cargando productos...</div>
+        ) : results.length > 0 ? (
           <div className="space-y-4">
             {results.map((product, i) => (
               <ProductSearchCard key={product.id} product={product} index={i} />
             ))}
           </div>
-        ) : (
+        ) : query.length >= 2 ? (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="py-32 text-center">
             <div className="text-6xl mb-6">✨</div>
             <h3 className="text-3xl font-extralight mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Sin resultados</h3>
@@ -176,7 +184,7 @@ export default function SearchPage() {
               Ver todos los productos <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
-        )}
+        ) : null}
 
         {/* Popular searches if empty query */}
         {query.length < 2 && (

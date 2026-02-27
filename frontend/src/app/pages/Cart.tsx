@@ -2,7 +2,7 @@
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from "lucide-react";
 import { useRef } from "react";
 import { motion, useInView, AnimatePresence } from "motion/react";
-import { mockProducts } from "../data/products";
+import { useProducts } from "../hooks/useProducts";
 import { useCart } from "../context/CartContext";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -21,11 +21,12 @@ function FadeUp({ children, delay = 0, className }: { children: React.ReactNode;
 
 export default function Cart() {
   const { items: cartItems, updateQuantity, removeItem } = useCart();
+  const { products } = useProducts();
 
   const total = cartItems.reduce((sum, item) => {
-    const product = mockProducts.find(p => p.id === item.productId);
+    const product = products.find(p => p.id === item.productId);
     if (!product) return sum;
-    const price = product.prices.find(p => p.site === item.selectedSite)?.price || 0;
+    const price = Number(product.prices?.find(p => p.site === item.selectedSite)?.price ?? product.unit_price ?? 0);
     return sum + price * item.quantity;
   }, 0);
 
@@ -90,11 +91,11 @@ export default function Cart() {
 
             <AnimatePresence>
               {cartItems.map((item, idx) => {
-                const product = mockProducts.find(p => p.id === item.productId);
+                const product = products.find(p => p.id === item.productId);
                 if (!product) return null;
-                const price = product.prices.find(p => p.site === item.selectedSite)?.price || 0;
+                const price = Number(product.prices?.find(p => p.site === item.selectedSite)?.price ?? product.unit_price ?? 0);
                 const subtotal = price * item.quantity;
-                const lowestPrice = Math.min(...product.prices.map(p => p.price));
+                const lowestPrice = product.prices?.length ? Math.min(...product.prices.map(p => Number(p.price))) : price;
 
                 return (
                   <motion.div key={item.productId}
@@ -106,7 +107,7 @@ export default function Cart() {
 
                     {/* Image */}
                     <Link to={`/product/${product.id}`} className="shrink-0 w-24 h-24 rounded-xl overflow-hidden bg-neutral-50">
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                      <img src={product.primary_image ?? product.images?.[0]?.url ?? product.image} alt={product.name} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                     </Link>
 
                     {/* Info */}

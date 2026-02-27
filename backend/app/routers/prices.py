@@ -5,7 +5,9 @@ from sqlalchemy import select
 from app.database import get_db
 from app.models.price import Price
 from app.schemas.price import PriceCreate, PriceUpdate, PriceOut
-from app.core.security import get_current_admin
+from app.core.security import require_role
+
+_can_manage = require_role('gestor_inventario', 'vendedor')
 
 router = APIRouter()
 
@@ -17,9 +19,10 @@ async def get_prices_for_product(product_id: str, db: AsyncSession = Depends(get
 
 
 @router.post("", response_model=PriceOut, status_code=status.HTTP_201_CREATED,
-             dependencies=[Depends(get_current_admin)])
+             dependencies=[Depends(_can_manage)])
 async def create_price(data: PriceCreate, db: AsyncSession = Depends(get_db)):
-    price = Price(**data.model_dump())
+    import uuid as _uuid
+    price = Price(id=str(_uuid.uuid4()), **data.model_dump())
     db.add(price)
     await db.flush()
     await db.refresh(price)
@@ -27,7 +30,7 @@ async def create_price(data: PriceCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.patch("/{price_id}", response_model=PriceOut,
-              dependencies=[Depends(get_current_admin)])
+              dependencies=[Depends(_can_manage)])
 async def update_price(price_id: str, data: PriceUpdate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Price).where(Price.id == price_id))
     price = result.scalar_one_or_none()
@@ -39,7 +42,7 @@ async def update_price(price_id: str, data: PriceUpdate, db: AsyncSession = Depe
 
 
 @router.delete("/{price_id}", status_code=status.HTTP_204_NO_CONTENT,
-               dependencies=[Depends(get_current_admin)])
+               dependencies=[Depends(_can_manage)])
 async def delete_price(price_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Price).where(Price.id == price_id))
     price = result.scalar_one_or_none()

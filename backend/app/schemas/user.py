@@ -67,10 +67,32 @@ class UserUpdate(BaseModel):
         return v
 
 
+VALID_ROLES = {
+    "gestor_inventario", "it", "analista", "vendedor", "administrativo"
+}
+
+
+class UserAdminUpdate(BaseModel):
+    """Campos que un super-admin puede modificar en cualquier cuenta."""
+    role: Optional[str] = Field(default=None)
+    is_active: Optional[bool] = None
+    is_admin: Optional[bool] = None
+
+    @field_validator("role")
+    @classmethod
+    def validate_role(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in VALID_ROLES:
+            raise ValueError(
+                f"Rol inválido. Válidos: {', '.join(sorted(VALID_ROLES))}"
+            )
+        return v
+
+
 class UserOut(UserBase):
     id: str
     is_active: bool
     is_admin: bool
+    role: Optional[str] = None
     totp_enabled: bool = False
     created_at: datetime
 

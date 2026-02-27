@@ -40,7 +40,15 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
     GOOGLE_REDIRECT_URI: str = "https://localhost/api/auth/google/callback"
-
+    # ── MinIO (almacenamiento de imágenes) ──────────────────────────────
+    MINIO_ENDPOINT: str = "http://minio:9000"
+    MINIO_ACCESS_KEY: str = "lookaly"
+    MINIO_SECRET_KEY: str = "lookalypass123"
+    MINIO_BUCKET: str = "lookaly"
+    # URL pública base que el frontend usa para las imágenes
+    # En desarrollo: /media (proxeado por nginx → MinIO)
+    # En producción: puede ser un CDN externo
+    MINIO_PUBLIC_BASE: str = "/media"
     model_config = {"env_file": ".env", "case_sensitive": True}
 
 

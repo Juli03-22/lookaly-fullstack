@@ -7,6 +7,7 @@ export interface AuthUser {
   email: string;
   is_admin: boolean;
   totp_enabled: boolean;
+  role?: string | null;
 }
 
 interface AuthState {
@@ -109,10 +110,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!meRes.ok) throw new Error('No se pudo obtener el perfil');
 
     saveSession(data.access_token, {
-      id:       String(me.id),
-      name:     me.name,
-      email:    me.email,
-      is_admin: me.is_admin ?? false,
+      id:           String(me.id),
+      name:         me.name,
+      email:        me.email,
+      is_admin:     me.is_admin ?? false,
+      totp_enabled: me.totp_enabled ?? false,
+      role:         me.role ?? null,
     });
   }, []);
 
@@ -152,6 +155,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await Promise.all(keys.map(k => caches.delete(k)));
     }
     window.location.replace('/login');
+  }, [token]);
+
+  // ── Refresh user ──────────────────────────────────────────────────────────
+  const refreshUser = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const me = await res.json();
+      const updated: AuthUser = {
+        id:           String(me.id),
+        name:         me.name,
+        email:        me.email,
+        is_admin:     me.is_admin ?? false,
+        totp_enabled: me.totp_enabled ?? false,
+        role:         me.role ?? null,
+      };
+      sessionStorage.setItem(SS_USER, JSON.stringify(updated));
+      setUser(updated);
+    } catch { /* ignorar */ }
   }, [token]);
 
   return (

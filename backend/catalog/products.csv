@@ -1,0 +1,79 @@
+# ============================================================
+# CATÁLOGO DE PRODUCTOS — Lookaly
+# ------------------------------------------------------------
+# INSTRUCCIONES:
+#   • Edita este archivo en Excel, Google Sheets o cualquier editor.
+#   • Borra las líneas de ejemplo y escribe tus productos reales.
+#   • Las líneas que comienzan con # son comentarios y se ignoran.
+#
+# COLUMNAS:
+#   id          → Clave única corta. Ej: m01, p01, c01, n01
+#                 Usa prefijos: m=maquillaje, p=piel, c=cuerpo
+#   name        → Nombre del producto (entre 2 y 200 caracteres)
+#   brand       → Marca del producto
+#   category    → UNA de estas tres opciones exactas:
+#                   maquillaje | piel | cuerpo
+#   description → Descripción del producto (10–2000 caracteres)
+#   image       → URL de la foto. Dos opciones:
+#                   a) URL externa: https://example.com/foto.jpg
+#                   b) Foto local:  products/mi-foto.jpg
+#                      (coloca el archivo en backend/static/images/products/)
+#   rating      → Calificación del 0.0 al 5.0 (decimal con punto)
+#   reviews     → Número de reseñas (entero)
+#
+# IMPORTANTE: No borres la línea de encabezado (id,name,brand,...)
+# ============================================================
+id,name,brand,category,description,image,rating,reviews
+# ── MAQUILLAJE ──────────────────────────────────────────────
+m01,Flawless Filter,Charlotte Tilbury,maquillaje,Base iluminadora de Charlotte Tilbury. Cobertura ligera y luminosa que se adapta a tu tono.,https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=600&q=80,4.8,3241
+m02,Rare Beauty Blush,Rare Beauty,maquillaje,Blush liquido de Selena Gomez. Alta pigmentacion una sola gota es suficiente.,https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80,4.9,5872
+m03,Sky High Mascara,Maybelline,maquillaje,Mascara que alarga y voluminiza las pestanas con formula de aceite de bambu.,https://images.unsplash.com/photo-1583241475880-083f84372725?w=600&q=80,4.6,12450
+m04,Gloss Bomb Universal,Fenty Beauty,maquillaje,Gloss ultra brillante sin pegajosidad. Hidrata y da volumen en un solo paso.,https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=600&q=80,4.8,7634
+m05,Radiant Creamy Concealer,NARS,maquillaje,Corrector cremoso de larga duracion con acabado radiante y natural todo el dia.,https://images.unsplash.com/photo-1631214498995-b9acacebe1eb?w=600&q=80,4.7,4891
+m06,Rosy Glow Blush,Dior,maquillaje,Rubor Dior con tecnologia color adapting. Se adapta al tono unico de tu piel.,https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80,4.8,2103
+m07,Lip Sleeping Mask,Laneige,maquillaje,Mascarilla de labios con aceites naturales que regenera los labios mientras duermes.,https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=600&q=80,4.7,9215
+m08,Double Wear Foundation,Estee Lauder,maquillaje,Base de alta cobertura resistente al agua con duracion de 24 horas sin retoque.,https://images.unsplash.com/photo-1599733589046-833e93b1a16e?w=600&q=80,4.6,18320
+m09,Power Grip Primer,e.l.f.,maquillaje,Primer con acido hialuronico al 5%. Agarra el maquillaje todo el dia efecto segunda piel.,https://images.unsplash.com/photo-1567721913486-6585f069b3b8?w=600&q=80,4.5,14760
+m10,Better Than Sex Mascara,Too Faced,maquillaje,Mascara voluminizadora con formula de colageno vegano. Efecto pestanas de infarto.,https://images.unsplash.com/photo-1503236823255-94609f598e71?w=600&q=80,4.7,6543
+m11,Ambient Lighting Powder,Hourglass,maquillaje,Polvo compacto libre de talco con acabado sedoso que filtra la luz perfectamente.,https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=600&q=80,4.8,1893
+m12,Lip Drip,NYX,maquillaje,Aceite de labios con color y brillo intenso. Textura no pegajosa con aceite de jojoba.,https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=600&q=80,4.3,8710
+m13,Surrealskin Foundation,Makeup by Mario,maquillaje,Base fluida de Mario Dedivanovic. Cobertura buildable y acabado skin-like de celebridades.,https://images.unsplash.com/photo-1599733589046-833e93b1a16e?w=600&q=80,4.7,2210
+m14,Revealer Concealer,Kosas,maquillaje,Corrector con suero integrado. Cubre imperfecciones mientras cuida la piel con HA.,https://images.unsplash.com/photo-1631214498995-b9acacebe1eb?w=600&q=80,4.6,3104
+m15,Hydro Grip Primer,Milk Makeup,maquillaje,Primer hidratante con extracto de cannabis y acido hialuronico. Agarra el maquillaje.,https://images.unsplash.com/photo-1567721913486-6585f069b3b8?w=600&q=80,4.6,5672
+m16,Easy Bake Powder,Huda Beauty,maquillaje,Setting powder para acabado horneado perfecto. Fija y controla el brillo hasta 16h.,https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=600&q=80,4.7,4231
+m17,All Nighter Setting Spray,Urban Decay,maquillaje,Spray fijador con Temperature Control. Mantiene el maquillaje fresco hasta 16 horas.,https://images.unsplash.com/photo-1567721913486-6585f069b3b8?w=600&q=80,4.6,11230
+# ── PIEL ────────────────────────────────────────────────────
+p01,Hyaluronic Acid 2% + B5,The Ordinary,piel,Suero de acido hialuronico. Hidratacion multicapa que rellena lineas de expresion.,https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80,4.5,28450
+p02,Anthelios UVmune 400,La Roche-Posay,piel,Protector solar con UVmune 400. Bloquea rayos UV de longitud de onda ultra larga.,https://images.unsplash.com/photo-1614159102629-2d2fa25ca67c?w=600&q=80,4.8,9870
+p03,Foaming Facial Cleanser,CeraVe,piel,Limpiador con ceramidas y acido hialuronico. Limpia sin alterar la barrera cutanea.,https://images.unsplash.com/photo-1612817288484-6f916006741a?w=600&q=80,4.6,35200
+p04,Watermelon Glow Drops,Glow Recipe,piel,Suero luminoso con sandia al 92% y niacinamida. Ilumina y uniforma el tono de piel.,https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=600&q=80,4.7,4320
+p05,2% BHA Liquid Exfoliant,Paula's Choice,piel,Exfoliante BHA de acido salicilico. Descongestiona poros y elimina celulas muertas.,https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80,4.8,16780
+p06,Lala Retro Whipped Cream,Drunk Elephant,piel,Crema hidratante con 6 aceites africanos y ceramidas. Restaura la barrera de noche.,https://images.unsplash.com/photo-1614159102629-2d2fa25ca67c?w=600&q=80,4.7,5640
+p07,Ultra Facial Cream,Kiehl's,piel,Crema facial con agua de glaciar y squalane. Hidratacion continua durante 24 horas.,https://images.unsplash.com/photo-1612817288484-6f916006741a?w=600&q=80,4.6,7890
+p08,C E Ferulic 30ml,SkinCeuticals,piel,El estandar de oro en vitamina C. Reduce fotodano y estimula colageno desde semana 1.,https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80,4.9,3210
+p09,Snail Mucin 96% Essence,COSRX,piel,Esencia con 96% de mucina de caracol. Repara regenera y reduce manchas visibles.,https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=600&q=80,4.7,22100
+p10,Glazing Milk,Rhode,piel,Crema barrera de Rhode by Hailey Bieber con ceramidas y acidos grasos esenciales.,https://images.unsplash.com/photo-1614159102629-2d2fa25ca67c?w=600&q=80,4.6,8930
+p11,Heart Leaf 77% Toner,Anua,piel,Tonico con 77% extracto corazon de avena. Calma la piel sensible e hidrata profundo.,https://images.unsplash.com/photo-1573461160327-672b8f4c07d7?w=600&q=80,4.7,11430
+p12,Relief Sun SPF 50+,Beauty of Joseon,piel,SPF coreano con arroz y propolis. Acabado serum sin residuo blanco para piel grasa.,https://images.unsplash.com/photo-1612817288484-6f916006741a?w=600&q=80,4.8,14560
+p13,Mineral 89 Daily Booster,Vichy,piel,Booster con 89% de agua volcanica termalizante. Refuerza y rehidrata la piel diaria.,https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=600&q=80,4.5,6780
+p14,Good Genes Serum,Sunday Riley,piel,Suero antiedad con acido lactico y licorice. Exfolia ilumina y rellena en una noche.,https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80,4.7,2890
+p15,Jet Lag Mask,Summer Fridays,piel,Mascarilla que elimina el cansancio cutaneo. Ideal como overnight o rinse-off mask.,https://images.unsplash.com/photo-1573461160327-672b8f4c07d7?w=600&q=80,4.6,4120
+p16,Expert Sun Protector Stick,Shiseido,piel,Stick solar SPF 50+ sin residuo blanco. Resistente al agua perfecto para retoques.,https://images.unsplash.com/photo-1614159102629-2d2fa25ca67c?w=600&q=80,4.5,3450
+# ── CUERPO ──────────────────────────────────────────────────
+c01,Bum Bum Cream,Sol de Janeiro,cuerpo,Crema con aceite de cupuacu y manteca de karite. Piel suave y aroma tropical irresistible.,https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80,4.8,24560
+c02,Derma Oil 125ml,Bio-Oil,cuerpo,Aceite multifuncion PurCellin Oil para cicatrices y estrias con vitaminas A y E.,https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600&q=80,4.6,18900
+c03,Sugar Body Scrub,Tree Hut,cuerpo,Exfoliante corporal con aceite de argan y azucar de cana. Piel sedosa y suave.,https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80,4.7,32100
+c04,Intensive Relief Lotion,Eucerin,cuerpo,Locion para piel muy seca con urea y ceramidas. Absorcion rapida sin residuo graso.,https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600&q=80,4.5,9870
+c05,Deep Moisture Body Wash,Dove,cuerpo,Jabon liquido con cuarto de crema hidratante. Piel suave y nutrida desde la primera ducha.,https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=600&q=80,4.4,42300
+c06,The Body Lotion,Necessaire,cuerpo,Locion con niacinamida vitamina C y E. Sin fragancia artificial formula clinica.,https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600&q=80,4.6,5430
+c07,Hydro Boost Body Gel,Neutrogena,cuerpo,Gel corporal con acido hialuronico. Hidratacion intensa textura gel-agua ligera.,https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80,4.5,11200
+c08,Cocoa Radiant Body Moisturizer,Jergens,cuerpo,Locion con manteca de cacao. Ilumina gradualmente el tono de la piel en 7 dias.,https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600&q=80,4.3,15670
+c09,Almond Shower Oil,L'Occitane,cuerpo,Aceite de ducha con leche de almendras dulces. Se transforma en espuma al contacto con agua.,https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80,4.7,7860
+c10,Skin Food Original,Weleda,cuerpo,Crema nutritiva botanica con calendula y manzanilla. Para piel muy seca y areas rugosas.,https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600&q=80,4.6,13450
+c11,Soaking Solution Salts,Dr. Teal's,cuerpo,Sales de bano con eucalipto y magnesio. Relajan musculos y calman la piel en 20 minutos.,https://images.unsplash.com/photo-1576426863848-c21f53c60b19?w=600&q=80,4.5,21000
+c12,Body Scrub,OUAI,cuerpo,Exfoliante con sal del Himalaya y manteca de karite. Fragancia St. Barths coco-almendra.,https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80,4.7,4210
+c13,Resurrection Hand Balm,Aesop,cuerpo,Balsamo de manos con manteca de karite y aceite de almendras. Aroma herbal inconfundible.,https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600&q=80,4.8,3120
+c14,Fine Fragrance Mist,Bath & Body Works,cuerpo,Body mist de larga duracion en formato ligero perfecto para refrescar durante el dia.,https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=600&q=80,4.4,56700
+c15,Atoderm Shower Oil,Bioderma,cuerpo,Aceite de ducha para piel seca y sensible. Limpia suavemente con textura seca.,https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600&q=80,4.6,6780
+c16,Ritual of Sakura Cream,Rituals,cuerpo,Crema con agua de jazmin sagrado y flor de cerezo japones. Hidratacion y aroma sublime.,https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80,4.7,9340
+c17,Creme de Corps,Kiehl's,cuerpo,Crema clasica de Kiehls desde 1968 con lanolina y aceite de sesamo. Nutricion de lujo.,https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600&q=80,4.7,11230

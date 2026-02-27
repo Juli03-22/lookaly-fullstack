@@ -1,10 +1,25 @@
-﻿export interface Product {
+﻿export interface ProductImage {
+  id: string;
+  url: string;
+  is_primary: boolean;
+  sort_order: number;
+}
+
+export interface Product {
   id: string;
   name: string;
   brand: string;
   category: 'maquillaje' | 'cuerpo' | 'piel';
+  subcategory?: string;
   description: string;
-  image: string;
+  image: string;          // columna legacy (fallback)
+  primary_image?: string; // calculado por el backend
+  images?: ProductImage[];
+  unit_price?: number;
+  stock?: number;
+  sku?: string;
+  weight_g?: number;
+  is_active?: boolean;
   prices: PriceComparison[];
   rating: number;
   reviews: number;

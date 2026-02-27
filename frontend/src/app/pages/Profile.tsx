@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Navigate } from 'react-router';
 import { motion, useInView } from 'motion/react';
 import { LogOut, Mail, Shield, ShoppingBag, Smartphone, QrCode, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { useAuth, avatarColor, avatarInitial } from '../context/AuthContext';
@@ -14,13 +14,16 @@ export default function Profile() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
 
-  // \u2500\u2500 Estado 2FA \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  const [twoFAStep, setTwoFAStep] = useState<'idle' | 'scanning' | 'disabling'>('idle');\n  const [qrCode, setQrCode] = useState('');\n  const [secret, setSecret] = useState('');\n  const [totpInput, setTotpInput] = useState('');\n  const [twoFALoading, setTwoFALoading] = useState(false);\n  const [twoFAMsg, setTwoFAMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+  // ── Estado 2FA ──────────────────────────────────────────────────────────────
+  const [twoFAStep, setTwoFAStep] = useState<'idle' | 'scanning' | 'disabling'>('idle');
+  const [qrCode, setQrCode] = useState('');
+  const [secret, setSecret] = useState('');
+  const [totpInput, setTotpInput] = useState('');
+  const [twoFALoading, setTwoFALoading] = useState(false);
+  const [twoFAMsg, setTwoFAMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
 
   // Si no hay usuario (no debería pasar con rutas protegidas) redirigir
-  if (!user) {
-    navigate('/login');
-    return null;
-  }
+  if (!user) return <Navigate to="/login" replace />;
 
   const color = avatarColor(user.name);
   const initial = avatarInitial(user.name);

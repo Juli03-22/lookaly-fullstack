@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Instalar deps primero (caching)
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copiar código fuente
 COPY . .

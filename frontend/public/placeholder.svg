@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <rect width="800" height="800" fill="#F5F0F2"/>
+  <rect x="280" y="260" width="240" height="220" rx="12" fill="#E5D0D8" opacity="0.6"/>
+  <circle cx="340" cy="310" r="28" fill="#C9A8B5" opacity="0.7"/>
+  <path d="M260 440 L320 360 L380 420 L430 370 L540 440 Z" fill="#D4B8C3" opacity="0.6"/>
+  <text x="400" y="530" font-family="Georgia, serif" font-size="22" fill="#B08090" text-anchor="middle" opacity="0.8">sin imagen</text>
+</svg>

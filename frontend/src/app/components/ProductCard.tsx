@@ -1,16 +1,18 @@
 import { Link } from 'react-router';
 import { Star } from 'lucide-react';
 import { Product } from '../data/products';
+import { lowestPrice as getLowest, productImage } from '../hooks/useProducts';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const lowestPrice = Math.min(...product.prices.map(p => p.price));
-  const highestPrice = Math.max(...product.prices.map(p => p.price));
-  const savings = highestPrice - lowestPrice;
-  const savingsPercent = Math.round((savings / highestPrice) * 100);
+  const prices = product.prices ?? [];
+  const lowest = getLowest(product);
+  const highest = prices.length > 0 ? Math.max(...prices.map(p => Number(p.price))) : lowest ?? 0;
+  const savings = lowest != null ? highest - lowest : 0;
+  const savingsPercent = highest > 0 ? Math.round((savings / highest) * 100) : 0;
 
   return (
     <Link to={`/product/${product.id}`} className="group">
@@ -18,9 +20,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Product Image */}
         <div className="aspect-square overflow-hidden bg-neutral-50">
           <img
-            src={product.image}
+            src={productImage(product)}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg'; }}
           />
         </div>
 
@@ -53,10 +56,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Price */}
           <div className="space-y-1 mb-4">
             <div className="text-2xl font-extralight">
-              ${lowestPrice.toLocaleString('es-MX')}
+              {lowest != null ? `$${lowest.toLocaleString('es-MX')}` : <span className="text-black/30 text-lg">Sin precio</span>}
             </div>
             <div className="text-xs text-black/40 font-light">
-              En {product.prices.length} tiendas
+              {prices.length > 0 ? `En ${prices.length} tiendas` : 'Precio base'}
             </div>
           </div>
 

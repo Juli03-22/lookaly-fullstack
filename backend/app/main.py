@@ -2,7 +2,9 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+from pathlib import Path
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 import logging
@@ -11,7 +13,9 @@ from app.config import settings
 from app.database import create_tables
 from app.routers import products, auth, prices, cart, users
 from app.routers import twofa, oauth as oauth_router
-from app.core.limiter import limiter  # 4.2: importado desde módulo dedicado (evita import circular)
+from app.routers import product_images, orders, brands
+from app.core.limiter import limiter
+from app.core import storage  # MinIO
 
 logger = logging.getLogger("lookaly")
 
@@ -20,6 +24,11 @@ logger = logging.getLogger("lookaly")
 async def lifespan(app: FastAPI):
     # Startup: crear tablas si no existen
     await create_tables()
+    # Inicializar MinIO: crear bucket si no existe y aplicar política pública
+    await storage.init_storage()
+    # Crear el directorio de imágenes si no existe (fallback dev)
+    images_dir = Path(__file__).parent.parent / "static" / "images" / "products"
+    images_dir.mkdir(parents=True, exist_ok=True)
     yield
     # Shutdown: nada por ahora
 
@@ -75,13 +84,24 @@ async def add_security_headers(request: Request, call_next) -> Response:
     return response
 
 # Routers
-app.include_router(auth.router,     prefix="/api/auth",     tags=["Auth"])
-app.include_router(twofa.router,    prefix="/api/auth/2fa", tags=["2FA"])
-app.include_router(oauth_router.router, prefix="/api/auth", tags=["OAuth"])
-app.include_router(users.router,    prefix="/api/users",    tags=["Users"])
-app.include_router(products.router, prefix="/api/products", tags=["Products"])
-app.include_router(prices.router,   prefix="/api/prices",   tags=["Prices"])
-app.include_router(cart.router,     prefix="/api/cart",     tags=["Cart"])
+app.include_router(auth.router,           prefix="/api/auth",                          tags=["Auth"])
+app.include_router(twofa.router,          prefix="/api/auth/2fa",                      tags=["2FA"])
+app.include_router(oauth_router.router,   prefix="/api/auth",                          tags=["OAuth"])
+app.include_router(users.router,          prefix="/api/users",                         tags=["Users"])
+app.include_router(products.router,       prefix="/api/products",                      tags=["Products"])
+app.include_router(product_images.router, prefix="/api/products/{product_id}/images",  tags=["Product Images"])
+app.include_router(prices.router,         prefix="/api/prices",                        tags=["Prices"])
+app.include_router(cart.router,           prefix="/api/cart",                          tags=["Cart"])
+app.include_router(orders.router,         prefix="/api/orders",                        tags=["Orders"])
+app.include_router(brands.router,         prefix="/api/brands",                        tags=["Brands"])
+
+# ── Archivos estáticos (fotos de productos) ────────────────────────────────────
+# Las fotos se sirven en  GET /static/images/products/<nombre>.jpg
+# Para agregar fotos: copia el archivo a  backend/static/images/products/
+# En el CSV escribe:  products/nombre-del-archivo.jpg
+_static_dir = Path(__file__).parent.parent / "static"
+_static_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
 
 
 # ─── 3. Manejadores de errores (3.5) ──────────────────────────────────────────

@@ -35,6 +35,11 @@ export default defineConfig({
         target: process.env.API_TARGET ?? 'http://localhost:8000',
         changeOrigin: true,
       },
+      // Fotos de productos servidas por FastAPI (/static/images/products/)
+      '/static': {
+        target: process.env.API_TARGET ?? 'http://localhost:8000',
+        changeOrigin: true,
+      },
     },
   },
 })

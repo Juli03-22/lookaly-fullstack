@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router';
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'motion/react';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { mockProducts } from '../data/products';
+import { useProducts, productImage, lowestPrice as getLowest } from '../hooks/useProducts';
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -80,7 +80,7 @@ export default function CategorySection() {
     );
   }
 
-  const products = mockProducts.filter(p => p.category === category);
+  const { products, loading } = useProducts(category ?? undefined);
 
   return (
     <div className="min-h-screen bg-[#FDF8F9]">
@@ -149,7 +149,9 @@ export default function CategorySection() {
             </Link>
           </FadeUp>
 
-          {products.length === 0 ? (
+          {loading ? (
+            <div className="py-20 text-center text-black/30 text-sm tracking-widest uppercase">Cargando...</div>
+          ) : products.length === 0 ? (
             <FadeUp className="py-20 text-center text-black/40">
               <Sparkles className="w-12 h-12 mx-auto mb-4 opacity-30" />
               <p className="text-lg font-light">Próximamente más productos en esta categoría</p>
@@ -157,18 +159,19 @@ export default function CategorySection() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {products.map((product, i) => {
-                const lowest = Math.min(...product.prices.map(p => p.price));
-                const highest = Math.max(...product.prices.map(p => p.price));
-                const savings = highest - lowest;
+                const prices = product.prices ?? [];
+                const lowest = getLowest(product);
+                const highest = prices.length > 0 ? Math.max(...prices.map(p => Number(p.price))) : (lowest ?? 0);
+                const savings = lowest != null ? highest - lowest : 0;
                 return (
                   <FadeUp key={product.id} delay={i * 0.1}>
                     <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.35 }}>
                       <Link to={`/product/${product.id}`} className="group block">
                         <div className="aspect-[4/5] overflow-hidden rounded-2xl bg-neutral-50 mb-4 relative">
-                          <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <img src={productImage(product)} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                           {savings > 0 && (
                             <div className="absolute top-4 left-4 bg-[#7D3150] text-white text-[10px] px-3 py-1 rounded-full tracking-widest uppercase">
-                              Ahorra ${savings}
+                              Ahorra ${savings.toLocaleString('es-MX')}
                             </div>
                           )}
                         </div>
@@ -176,12 +179,14 @@ export default function CategorySection() {
                           <div className="text-xs uppercase tracking-widest text-black/35">{product.brand}</div>
                           <h3 className="text-lg group-hover:text-[#7D3150] transition-colors leading-tight"
                             style={{ fontFamily: "'Cormorant Garamond', serif" }}>{product.name}</h3>
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-light text-[#7D3150]"
-                              style={{ fontFamily: "'Cormorant Garamond', serif" }}>${lowest.toLocaleString('es-MX')}</span>
-                            <span className="text-xs text-black/35">desde</span>
-                          </div>
-                          <div className="text-xs text-black/40">{product.prices.length} tiendas comparadas</div>
+                          {lowest != null && (
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-2xl font-light text-[#7D3150]"
+                                style={{ fontFamily: "'Cormorant Garamond', serif" }}>${lowest.toLocaleString('es-MX')}</span>
+                              <span className="text-xs text-black/35">desde</span>
+                            </div>
+                          )}
+                          {prices.length > 0 && <div className="text-xs text-black/40">{prices.length} tiendas comparadas</div>}
                         </div>
                       </Link>
                     </motion.div>

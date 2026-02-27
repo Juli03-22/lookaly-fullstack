@@ -26,6 +26,11 @@ class User(Base):
     # ── OAuth ────────────────────────────────────────────────────────────
     google_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True, unique=True, index=True)
 
+    # ── Rol de staff ────────────────────────────────────────────────────
+    # None  → usuario normal
+    # Valores válidos: 'gestor_inventario' | 'it' | 'analista' | 'vendedor' | 'administrativo'
+    role: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, default=None)
+
     # ── 2FA (TOTP) ──────────────────────────────────────────────────────
     totp_secret: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     totp_enabled: Mapped[bool] = mapped_column(Boolean, default=False)

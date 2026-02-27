@@ -172,3 +172,23 @@ async def get_current_admin(current_user: User = Depends(get_current_user)) -> U
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Se requieren permisos de administrador")
     return current_user
+
+
+def require_role(*roles: str):
+    """
+    Dependencia de FastAPI que autoriza al super-admin (is_admin=True)
+    o a cualquier usuario cuyo rol esté entre los indicados.
+
+    Uso:
+        dependencies=[Depends(require_role('gestor_inventario', 'vendedor'))]
+    """
+    async def _check(current_user: User = Depends(get_current_user)) -> User:
+        if current_user.is_admin:
+            return current_user
+        if current_user.role in roles:
+            return current_user
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos para esta acción",
+        )
+    return _check

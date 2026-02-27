@@ -26,7 +26,7 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules        # preservar node_modules del contenedor
+      - frontend_node_modules:/app/node_modules  # volumen nombrado → se limpia con 'down -v'
     environment:
       - VITE_API_URL=http://localhost:8000
       - API_TARGET=http://backend:8000   # proxy interno Docker
@@ -42,16 +42,46 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app           # hot-reload montando el código
+      # ↑ En producción (sin el volumen anterior) agrega estos dos en su lugar:
+      # - ./backend/catalog:/app/catalog              # catálogo CSV editable
+      # - ./backend/static/images:/app/static/images  # fotos de productos persistentes
     environment:
       - DATABASE_URL=postgresql+asyncpg://lookaly:lookalypass@db:5432/lookaly_db
       - SECRET_KEY=${SECRET_KEY:-dev-secret-change-in-production}
       - FRONTEND_URL=http://localhost:5173
       - DEBUG=true
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_ACCESS_KEY=lookaly
+      - MINIO_SECRET_KEY=lookalypass123
+      - MINIO_BUCKET=lookaly
+      - MINIO_PUBLIC_BASE=/media
+    command: >
+      sh -c "python seed.py && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     depends_on:
       db:
         condition: service_healthy
+      minio:
+        condition: service_healthy
     restart: unless-stopped
 
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"   # S3 API (imágenes)
+      - "9001:9001"   # Console web
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: lookaly
+      MINIO_ROOT_PASSWORD: lookalypass123
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   db:
     image: postgres:16-alpine
@@ -72,5 +102,19 @@ services:
       retries: 10
     restart: unless-stopped
 
+# ──────────────────────────────────────────────────────────────────────────────
+# VOLÚMENES — La BD y MinIO persisten aunque hagas 'docker compose down'.
+#
+# Para BAJAR sin perder datos:   docker compose down          ✅
+# Para SUBIR de nuevo:           docker compose up -d          ✅
+# Para borrar TODO (reset total): docker volume rm lookaly-fullstack_postgres_data lookaly-fullstack_minio_data
+#
+# NUNCA uses 'docker compose down -v' salvo que quieras borrar todo.
+# Para rebuild del frontend sin tocar la BD:
+#   docker volume rm lookaly-fullstack_frontend_node_modules
+#   docker compose up --build -d
+# ──────────────────────────────────────────────────────────────────────────────
 volumes:
   postgres_data:
+  minio_data:
+  frontend_node_modules:

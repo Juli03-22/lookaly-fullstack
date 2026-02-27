@@ -1,0 +1,175 @@
+# ============================================================
+# PRECIOS POR TIENDA — Lookaly
+# ------------------------------------------------------------
+# INSTRUCCIONES:
+#   • Cada fila = un precio en una tienda para un producto.
+#   • El campo product_id debe coincidir con el campo "id" en products.csv.
+#   • Puedes tener múltiples filas para el mismo producto (una por tienda).
+#   • Las líneas que comienzan con # son comentarios y se ignoran.
+#
+# COLUMNAS:
+#   product_id   → ID del producto (igual al campo "id" en products.csv)
+#   store        → Nombre de la tienda (ej: Amazon MX, Sephora MX, Walmart, Lookaly.mx)
+#   price_mxn    → Precio en pesos mexicanos (decimal con punto, sin $)
+#   shipping_mxn → Costo de envío en MXN. Escribe 0 si es gratis.
+#
+# TIENDAS SUGERIDAS:
+#   Amazon MX | Sephora MX | Walmart | Lookaly.mx | Liverpool | El Palacio de Hierro
+#
+# IMPORTANTE: No borres la línea de encabezado (product_id,store,...)
+# ============================================================
+product_id,store,price_mxn,shipping_mxn
+# ── MAQUILLAJE ──────────────────────────────────────────────
+m01,Amazon MX,1360,0
+m01,Sephora MX,1300,0
+m01,Lookaly.mx,1190,0
+m02,Amazon MX,690,0
+m02,Sephora MX,665,0
+m02,Lookaly.mx,595,0
+m03,Amazon MX,285,0
+m03,Walmart,245,99
+m03,Lookaly.mx,199,0
+m04,Amazon MX,610,0
+m04,Sephora MX,580,0
+m04,Lookaly.mx,520,0
+m05,Amazon MX,690,0
+m05,Sephora MX,720,0
+m05,Lookaly.mx,640,0
+m06,Amazon MX,980,0
+m06,Sephora MX,1050,0
+m06,Lookaly.mx,899,0
+m07,Amazon MX,480,0
+m07,Sephora MX,560,0
+m07,Walmart,495,99
+m07,Lookaly.mx,430,0
+m08,Amazon MX,1150,0
+m08,Sephora MX,1250,0
+m08,Lookaly.mx,1080,0
+m09,Amazon MX,320,0
+m09,Walmart,290,99
+m09,Lookaly.mx,250,0
+m10,Amazon MX,650,0
+m10,Sephora MX,690,0
+m10,Lookaly.mx,590,0
+m11,Amazon MX,1100,0
+m11,Sephora MX,1150,0
+m11,Lookaly.mx,995,0
+m12,Amazon MX,240,0
+m12,Walmart,210,99
+m12,Lookaly.mx,185,0
+m13,Amazon MX,1100,0
+m13,Sephora MX,1200,0
+m13,Lookaly.mx,990,0
+m14,Amazon MX,650,0
+m14,Sephora MX,680,0
+m14,Lookaly.mx,585,0
+m15,Amazon MX,820,0
+m15,Sephora MX,880,0
+m15,Lookaly.mx,740,0
+m16,Amazon MX,890,0
+m16,Sephora MX,950,0
+m16,Lookaly.mx,810,0
+m17,Amazon MX,780,0
+m17,Sephora MX,820,0
+m17,Lookaly.mx,695,0
+# ── PIEL ────────────────────────────────────────────────────
+p01,Amazon MX,260,0
+p01,Sephora MX,310,0
+p01,Walmart,285,99
+p01,Lookaly.mx,225,0
+p02,Amazon MX,520,0
+p02,Walmart,449,99
+p02,Lookaly.mx,395,0
+p03,Amazon MX,360,0
+p03,Walmart,315,99
+p03,Lookaly.mx,280,0
+p04,Amazon MX,850,0
+p04,Sephora MX,920,0
+p04,Lookaly.mx,780,0
+p05,Amazon MX,890,0
+p05,Lookaly.mx,790,0
+p06,Amazon MX,1350,0
+p06,Sephora MX,1450,0
+p06,Lookaly.mx,1240,0
+p07,Amazon MX,790,0
+p07,Sephora MX,850,0
+p07,Lookaly.mx,720,0
+p08,Amazon MX,4500,0
+p08,Sephora MX,4850,0
+p08,Walmart,4600,99
+p08,Lookaly.mx,4150,0
+p09,Amazon MX,450,0
+p09,Walmart,520,99
+p09,Lookaly.mx,390,0
+p10,Amazon MX,850,0
+p10,Lookaly.mx,750,0
+p11,Amazon MX,580,0
+p11,Lookaly.mx,495,0
+p12,Amazon MX,420,0
+p12,Lookaly.mx,365,0
+p13,Amazon MX,680,0
+p13,Walmart,620,99
+p13,Lookaly.mx,560,0
+p14,Amazon MX,2100,0
+p14,Sephora MX,2350,0
+p14,Lookaly.mx,1950,0
+p15,Amazon MX,1050,0
+p15,Sephora MX,1180,0
+p15,Lookaly.mx,960,0
+p16,Amazon MX,690,0
+p16,Sephora MX,780,0
+p16,Walmart,720,99
+p16,Lookaly.mx,630,0
+# ── CUERPO ──────────────────────────────────────────────────
+c01,Amazon MX,1150,0
+c01,Sephora MX,1305,0
+c01,Walmart,1200,99
+c01,Lookaly.mx,995,0
+c02,Amazon MX,420,0
+c02,Walmart,385,99
+c02,Lookaly.mx,340,0
+c03,Amazon MX,310,0
+c03,Walmart,265,99
+c03,Lookaly.mx,225,0
+c04,Amazon MX,480,0
+c04,Walmart,420,99
+c04,Lookaly.mx,375,0
+c05,Amazon MX,160,0
+c05,Walmart,135,99
+c05,Lookaly.mx,115,0
+c06,Amazon MX,650,0
+c06,Sephora MX,720,0
+c06,Lookaly.mx,590,0
+c07,Amazon MX,280,0
+c07,Walmart,245,99
+c07,Lookaly.mx,210,0
+c08,Amazon MX,180,0
+c08,Walmart,145,99
+c08,Lookaly.mx,125,0
+c09,Amazon MX,650,0
+c09,Sephora MX,720,0
+c09,Lookaly.mx,595,0
+c10,Amazon MX,450,0
+c10,Walmart,420,99
+c10,Lookaly.mx,380,0
+c11,Amazon MX,230,0
+c11,Walmart,195,99
+c11,Lookaly.mx,165,0
+c12,Amazon MX,850,0
+c12,Sephora MX,940,0
+c12,Lookaly.mx,790,0
+c13,Amazon MX,750,0
+c13,Sephora MX,820,0
+c13,Lookaly.mx,695,0
+c14,Amazon MX,380,0
+c14,Walmart,420,99
+c14,Lookaly.mx,320,0
+c15,Amazon MX,550,0
+c15,Walmart,495,99
+c15,Lookaly.mx,440,0
+c16,Amazon MX,420,0
+c16,Sephora MX,480,0
+c16,Lookaly.mx,385,0
+c17,Amazon MX,680,0
+c17,Sephora MX,750,0
+c17,Lookaly.mx,620,0
